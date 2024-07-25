@@ -1,0 +1,54 @@
+import speech_recognition as speech
+import pyttsx3
+
+engine = pyttsx3.init()
+engine.setProperty('rate', 150)
+engine.setProperty('volume',1)
+
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
+
+def listen():
+    rec=speech.Recognizer()
+    with speech.Microphone() as source:
+        print("Listening.....")
+        audio=rec.listen(source)
+        try:
+            command=rec.recognize_google(audio)
+            print(f"User said: {command}")
+            return command.lower()
+        except speech.UnknownValueError:
+            speak("Sorry, I Didn't Understand.")
+            return ""
+        except speech.RequestError:
+            speak("Sorry, Service Is Down")
+            return ""
+
+
+def handle_command(command):
+    if "hello" in command:
+        speak("Hello! How can I help you Sir!")
+    elif "your name" in command:
+        speak("I am Jarvis, your personal voice assistant.")
+    elif "how" in command:
+        speak("I am good Sir, What about You!")
+    elif "time" in command:
+        from datetime import datetime
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        speak(f"The time is {current_time}")
+    elif "weather" in command:
+        speak("Its Cloudy outside, Perfect time to have a hot cup of tea!")
+
+    
+
+# Main loop
+if __name__ == "__main__":
+    while True:
+        command = listen()
+        if command:
+            handle_command(command)
+        if "exit" in command or "bye" in command:
+            speak("Goodbye Sir!")
+            break
